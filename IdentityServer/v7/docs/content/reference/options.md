@@ -773,7 +773,26 @@ Alternatively, you can suppress the warning at the call site:
 In large deployments of Duende IdentityServer, where a lot of concurrent users attempt to
 consume the [discovery endpoint]({{< ref "reference/endpoints/discovery" >}}) to retrieve
 metadata about your IdentityServer, you can increase throughput by enabling the
-discovery document cache preview. This will cache discovery document information for the
-duration specified in the **DiscoveryDocumentCacheDuration** option.
+discovery document cache preview using the **EnableDiscoveryDocumentCache** flag.
+This will cache discovery document information for the duration specified in the
+**DiscoveryDocumentCacheDuration** option.
+
+It's best to keep the cache time low if you use the `CustomEntries` element on the
+discovery document or implement a custom `IDiscoveryResponseGenerator`.
 
 The `DUENDEPREVIEW0001` diagnostic is reported when using the discovery endpoint cache.
+
+#### DUENDEPREVIEW0002
+
+When using [*private key JWT*]({{< ref "/tokens/authentication/jwt" >}}),
+there is a theoretical vulnerability where a Relying Party trusting multiple OpenID Providers
+could be attacked if one of the OpenID Providers is malicious or compromised.
+
+The OpenID Foundation proposed a two-part fix: strictly validate the audience and set an
+explicit `typ` header in the authentication JWT.
+
+You can [enable strict audience validation in Duende IdentityServer]({{< ref "/tokens/authentication/jwt#strict-audience-validation" >}})
+using the **StrictClientAssertionAudienceValidation** flag, which strictly validates that
+the audience is equal to the issuer and validates the token's `typ` header.
+
+The `DUENDEPREVIEW0002` diagnostic is reported when using Strict Audience Validation.
